@@ -30,19 +30,41 @@ class Player(BasePlayer):
     def get_edge_nodes(self):
 
         edgeNodes = []
+
+        setOfNodes = self.board.nodes
         
-        for node in self.nodes:
+        for node in setOfNodes:
             #Get list of neighbors for each of our owned nodes
-            neighbors = self.board.neighbors(node)
-            for neighbor in neighbors:
-                #Iterate through them. If has non-ourself, add to return list
-                if self.board.nodes[neighbor]{'owner'} != self.player_num:
-                    #Since non-ourself node, add to result list
-                    edgeNodes += self.nodes[i]
-                    #exit loop to avoid adding edge node too many times
-                    j = len(neighbors) + 1
+            if node['owner'] == self.player_num:
+                neighbors = self.board.neighbors(node)
+                for neighbor in neighbors:
+                    #Iterate through them. If has non-ourself, add to return list
+                    if neighbor['owner'] != self.player_num:
+                        #Since non-ourself node, add to result list
+                        edgeNodes += node
+                        #exit loop to avoid adding edge node too many times
+                        j = len(neighbors) + 1
 
         return edgeNodes
+
+    #This function gets non-owned neighbor nodes
+    #Call after get_edge_nodes, pass in the lists for better processing
+    def get_neighbor_nodes(edgeNodes):
+
+        neighborNodes = []
+
+        for edge in edgeNodes:
+            #Get list of neighbors for each edge node
+            neighbors = self.board.neighbors(edge)
+            for neighbor in neighbors:
+                #Iterate through them. If the node is non-ourself, add to return list
+                if board.nodes[neighbor]{'owner'} != self.player_num:
+                    #Since non-ourself node, add to result list
+                    neighborNodes += neighbor
+                    #exit loop to avoid adding node too many times
+                    j = len(neighbors) + 1
+
+        return neighborNodes
     
     """
     Called at the start of every placement phase and movement phase.
