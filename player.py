@@ -123,7 +123,7 @@ class Player(BasePlayer):
 
         for node in nodes:
             if (node['owner'] == p_id):
-                counter++
+                counter += 1
 
         return 4 + math.floor((1 - pow(.9, counter)) / (1 - .9))
     
@@ -134,8 +134,6 @@ class Player(BasePlayer):
         self.aptList[3] = calc_apt(board, 'p4')
 
         return
-
-    def 
 
     """
     Called at the start of every placement phase and movement phase.
@@ -167,6 +165,13 @@ class Player(BasePlayer):
     #Returns a node list list. Each list contains the nodes that
     # neighbor the corresponding neighbor node in self.neighbor_list
     def get_adjacent_own_nodes(self):
+        n_list = [[]]
+
+        for n in self.neighbor_list:
+            for e in self.edge_list:
+                if (n in get_neutral_neighbors(e)): n_list.append([n, e])
+
+        return n_list
         
             
     #Creates a spread-type placeset
@@ -175,7 +180,7 @@ class Player(BasePlayer):
         self.neighborList = sort_by_count(self.neighborList)
         own_adjacency_list = get_adjacent_own_nodes(self)
 
-        for node_list 
+        return
 
     def create_attack_place(self):
         return None
