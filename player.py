@@ -1,4 +1,6 @@
 from base_player import BasePlayer
+from enum import ENUM
+import math
 import networkx as nx
 
 class Player(BasePlayer):
@@ -39,6 +41,8 @@ class Player(BasePlayer):
 
         #Priority queue to store our enumerated types, default in above
         self.prioritiesPQ = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        #APT is stored by ID. Our own player ID may not align with the first index of this list
+        self.aptList = [5, 5, 5, 5]
         
         return
 
@@ -112,11 +116,33 @@ class Player(BasePlayer):
 
         return list(enemy_neighbors)
 
+    #Calculates the apt for the board and given player ID
+    def calc_apt(board, p_id):
+        nodes = self.board.nodes
+        counter = 0
+
+        for node in nodes:
+            if (node['owner'] == p_id):
+                counter++
+
+        return 4 + math.floor((1 - pow(.9, counter)) / (1 - .9))
+    
+    def update_apt_list(self, board):
+        self.aptList[0] = calc_apt(board, 'p1')
+        self.aptList[1] = calc_apt(board, 'p2')
+        self.aptList[2] = calc_apt(board, 'p3')
+        self.aptList[3] = calc_apt(board, 'p4')
+
+        return
+
     """
     Called at the start of every placement phase and movement phase.
     """
     def init_turn(self, board, nodes, max_units):
         super().init_turn(board, nodes, max_units)       #Initializes turn-level state variables
+
+        #Update self data
+        update_apt_list(self, board)
 
         """
         Insert any player-specific turn initialization code here
