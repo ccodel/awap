@@ -52,7 +52,7 @@ class Player(BasePlayer):
 
         for edge in edgeNodes:
             #Get list of neighbors for each edge node
-            neighbors = self.board.neighbors(edgeNodes[i])
+            neighbors = self.board.neighbors(edge)
             for neighbor in neighbors:
                 #Iterate through them. If the node is non-ourself, add to return list
                 if board.nodes[neighbor]{'owner'} != self.player_num:
