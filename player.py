@@ -65,6 +65,7 @@ class Player(BasePlayer):
 
         return neutral_neighbors
 
+    #This function gets the neighbors of the given node that are enemies
     def get_enemy_neighbors(self, node):
         neighbors = self.board.neighbors(node)
         enemy_neighbors = []
@@ -84,9 +85,10 @@ class Player(BasePlayer):
         our_nodes = self.board.nodes
         
         for node in our_nodes:
-            n_neutral_neighbors = get_neutral_neighbors(self, node)
-            for neighbor in n_neutral_neighbors:
-                neutral_neighbors.add(neighbor)
+            if(node['owner'] == self.player_num):
+               n_neutral_neighbors = get_neutral_neighbors(self, node)
+               for neighbor in n_neutral_neighbors:
+                   neutral_neighbors.add(neighbor)
 
         return list(neutral_neighbors)
 
@@ -98,9 +100,10 @@ class Player(BasePlayer):
         our_nodes = self.board.nodes
         
         for node in our_nodes:
-            n_enemy_neighbors = get_enemy_neighbors(self, node)
-            for neighbor in n_enemy_neighbors:
-                enemy_neighbors.add(neighbor)
+            if(node['owner'] == self.player_num):
+                n_enemy_neighbors = get_enemy_neighbors(self, node)
+                for neighbor in n_enemy_neighbors:
+                    enemy_neighbors.add(neighbor)
 
         return list(enemy_neighbors)
 
