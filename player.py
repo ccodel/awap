@@ -46,6 +46,14 @@ class Player(BasePlayer):
         
         return
 
+    #This function returns all of our nodes
+    def get_our_nodes(self):
+        all_nodes = self.board.nodes
+        our_nodes = []
+        for n in all_nodes:
+            if(n['owner'] == self.player_num): our_nodes.append(n)
+
+        return our_nodes
 
     #This function gets the neighbors of the given node that are owned by self
     def get_friendly_neighbors(self, node):
@@ -54,7 +62,7 @@ class Player(BasePlayer):
 
         for n in neighbors:
             n_node = self.board.nodes[n]
-            if(n_node['owner'] == self.player_num) owned_neighbors.append(n_node)
+            if(n_node['owner'] == self.player_num): owned_neighbors.append(n_node)
 
         return owned_neighbors
 
@@ -65,7 +73,7 @@ class Player(BasePlayer):
         
         for n in neighbors:
             n_node = self.board.nodes[n]
-            if(n_node['owner'] == None) neutral_neighbors.append(n_node)
+            if(n_node['owner'] == None): neutral_neighbors.append(n_node)
 
         return neutral_neighbors
 
@@ -82,17 +90,15 @@ class Player(BasePlayer):
         return enemy_neighbors
 
     #This function gets all neighbor nodes that are neutral
-    #Call after get_edge_nodes, pass in the lists for better processing
-    def get_all_neutral_neighbors(edgeNodes):
+    def get_all_neutral_neighbors(self):
         neutral_neighbors = set([])
 
-        our_nodes = self.board.nodes
+        our_nodes = get_our_nodes(self)
         
         for node in our_nodes:
-            if(node['owner'] == self.player_num):
-               n_neutral_neighbors = get_neutral_neighbors(self, node)
-               for neighbor in n_neutral_neighbors:
-                   neutral_neighbors.add(neighbor)
+            n_neutral_neighbors = get_neutral_neighbors(self, node)
+            for neighbor in n_neutral_neighbors:
+                neutral_neighbors.add(neighbor)
 
         return list(neutral_neighbors)
 
@@ -101,13 +107,12 @@ class Player(BasePlayer):
     def get_all_enemy_neighbors(edgeNodes):
         enemy_neighbors = set([])
 
-        our_nodes = self.board.nodes
+        our_nodes = get_our_nodes(self)
         
         for node in our_nodes:
-            if(node['owner'] == self.player_num):
-                n_enemy_neighbors = get_enemy_neighbors(self, node)
-                for neighbor in n_enemy_neighbors:
-                    enemy_neighbors.add(neighbor)
+            n_enemy_neighbors = get_enemy_neighbors(self, node)
+            for neighbor in n_enemy_neighbors:
+                enemy_neighbors.add(neighbor)
 
         return list(enemy_neighbors)
 
