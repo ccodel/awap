@@ -47,6 +47,7 @@ class Player(BasePlayer):
 
         return neutral_neighbors
 
+    #This function gets the neighbors of the given node that are enemies
     def get_enemy_neighbors(self, node):
         neighbors = self.board.neighbors(node)
         enemy_neighbors = []
@@ -58,21 +59,6 @@ class Player(BasePlayer):
 
         return enemy_neighbors
 
-    #This function gets neighbor nodes we own
-    #Call after board info is updated in self
-    def get_all_friendly_neighbors(self):
-
-        owned_neighbors = set([])
-
-        our_nodes = self.board.nodes
-        
-        for node in our_nodes:
-            n_friendly_neighbors = get_friendly_neighbors(self, node)
-            for neighbor in n_friendly_neighbors:
-                owned_neighbors.add(neighbor)
-
-        return list(owned_neighbors)
-
     #This function gets all neighbor nodes that are neutral
     #Call after get_edge_nodes, pass in the lists for better processing
     def get_all_neutral_neighbors(edgeNodes):
@@ -81,9 +67,10 @@ class Player(BasePlayer):
         our_nodes = self.board.nodes
         
         for node in our_nodes:
-            n_neutral_neighbors = get_neutral_neighbors(self, node)
-            for neighbor in n_neutral_neighbors:
-                neutral_neighbors.add(neighbor)
+            if(node['owner'] == self.player_num):
+               n_neutral_neighbors = get_neutral_neighbors(self, node)
+               for neighbor in n_neutral_neighbors:
+                   neutral_neighbors.add(neighbor)
 
         return list(neutral_neighbors)
 
@@ -95,9 +82,10 @@ class Player(BasePlayer):
         our_nodes = self.board.nodes
         
         for node in our_nodes:
-            n_enemy_neighbors = get_enemy_neighbors(self, node)
-            for neighbor in n_enemy_neighbors:
-                enemy_neighbors.add(neighbor)
+            if(node['owner'] == self.player_num):
+                n_enemy_neighbors = get_enemy_neighbors(self, node)
+                for neighbor in n_enemy_neighbors:
+                    enemy_neighbors.add(neighbor)
 
         return list(enemy_neighbors)
 
