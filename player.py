@@ -180,8 +180,6 @@ class Player(BasePlayer):
 
         return n_list
 
-        
-            
     #Creates a spread-type placeset
     def create_spread_place(self, units_to_place):
         #Prioritize low-army territories in adjacency
@@ -192,11 +190,40 @@ class Player(BasePlayer):
             node_list = sort_by_count(node_list)
             best_node = node_list[len(node_list) - 1]
         return
-            
-
 
     def create_attack_place(self, units_to_place, p_id):
-        return None
+        #Figure out what nodes we need to place
+        adjacent_nodes = []
+        for n in self.edge_list:
+            n_neighbors = get_unfriendly_neighbors(self, n)
+            for neighbor in n_neighbors:
+                if (neighbor['owner'] == p_id): 
+                    adjacent_nodes.append(neighbor)
+                    break
+
+        #Make a list that keeps track of how much the enemy had last time
+        adjacent_to_p = []
+        total_armies = 0
+        for n in adjacent_nodes:
+            num_armies = 0
+            for neighbor in get_unfriendly_neighbors(self, n):
+                num_armies += neighbor['old_units']
+            adjacent_to_p.append((n, num_armies))
+            total_armies += num_armies
+
+        ratio = units_to_place / total_armies
+
+        #We approportion the armies based on how much better we think we're doing
+        #If units_to_place is 2x total_armies, we approprotion proportionately
+        #Else, we choose one place randomly to attack in force
+        placement_orders = []
+        if(ratio > 2.0):
+            for n in adjacent_to_p:
+                placement_orders.append((n[0], int(n[1]*ratio))
+        else:
+            node_id = random.randint(0, placement_orders.length - 1)
+            placement_orders = [(adjacent_to_p[node_id], units_to_place)] 
+
 
     def create_defend_place(self, units_to_place, p_id):
         return None
