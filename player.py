@@ -33,7 +33,7 @@ class Player(BasePlayer):
         
         for i in range[0, len(self.nodes)]:
             #Get list of neighbors for each of our owned nodes
-            neighbors = self.board.neighbors(self.nodes(i))
+            neighbors = self.board.neighbors(self.nodes[i])
             for j in range[0, len(neighbors)]:
                 #Iterate through them. If has non-ourself, add to return list
                 if board.nodes[neighbors(j)]{'owner'} != self.player_num:
@@ -43,6 +43,25 @@ class Player(BasePlayer):
                     j = len(neighbors) + 1
 
         return edgeNodes
+
+    #This function gets non-owned neighbor nodes
+    #Call after get_edge_nodes, pass in the lists for better processing
+    def get_neighbor_nodes(edgeNodes):
+
+        neighborNodes = []
+
+        for edge in edgeNodes:
+            #Get list of neighbors for each edge node
+            neighbors = self.board.neighbors(edgeNodes[i])
+            for neighbor in neighbors:
+                #Iterate through them. If the node is non-ourself, add to return list
+                if board.nodes[neighbor]{'owner'} != self.player_num:
+                    #Since non-ourself node, add to result list
+                    neighborNodes += neighbor
+                    #exit loop to avoid adding node too many times
+                    j = len(neighbors) + 1
+
+        return neighborNodes
     
     """
     Called at the start of every placement phase and movement phase.
