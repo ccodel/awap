@@ -25,47 +25,82 @@ class Player(BasePlayer):
         return
 
 
-    #This function gets our own edge nodes
-    #Call after board info is updated in self
-    def get_edge_nodes(self):
+    #This function gets the neighbors of the given node that are owned by self
+    def get_friendly_neighbors(self, node):
+        neighbors = self.board.neighbors(node)
+        owned_neighbors = []
 
-        edgeNodes = []
+        for n in neighbors:
+            n_node = self.board.nodes[n]
+            if(n_node['owner'] == self.player_num) owned_neighbors.append(n_node)
 
-        setOfNodes = self.board.nodes
+        return owned_neighbors
+
+    #This function gets the neighbors of the given node that are neutral
+    def get_neutral_neighbors(self, node):
+        neighbors = self.board.neighbors(node)
+        neutral_neighbors = []
         
-        for node in setOfNodes:
-            #Get list of neighbors for each of our owned nodes
-            if node['owner'] == self.player_num:
-                neighbors = self.board.neighbors(node)
-                for neighbor in neighbors:
-                    #Iterate through them. If has non-ourself, add to return list
-                    if neighbor['owner'] != self.player_num:
-                        #Since non-ourself node, add to result list
-                        edgeNodes += node
-                        #exit loop to avoid adding edge node too many times
-                        j = len(neighbors) + 1
+        for n in neighbors:
+            n_node = self.board.nodes[n]
+            if(n_node['owner'] == None) neutral_neighbors.append(n_node)
 
-        return edgeNodes
+        return neutral_neighbors
 
-    #This function gets non-owned neighbor nodes
+    def get_enemy_neighbors(self, node):
+        neighbors = self.board.neighbors(node)
+        enemy_neighbors = []
+
+        for n in neighbors:
+            n_node = self.board.nodes[n]
+            if(n_node['owner'] != None and n_node['owner'] != self.player_num):
+                owned_neighbors.append(n_node)
+
+        return enemy_neighbors
+
+    #This function gets neighbor nodes we own
+    #Call after board info is updated in self
+    def get_all_friendly_neighbors(self):
+
+        owned_neighbors = set([])
+
+        our_nodes = self.board.nodes
+        
+        for node in our_nodes:
+            n_friendly_neighbors = get_friendly_neighbors(self, node)
+            for neighbor in n_friendly_neighbors:
+                owned_neighbors.add(neighbor)
+
+        return list(owned_neighbors)
+
+    #This function gets all neighbor nodes that are neutral
     #Call after get_edge_nodes, pass in the lists for better processing
-    def get_neighbor_nodes(edgeNodes):
+    def get_all_neutral_neighbors(edgeNodes):
+        neutral_neighbors = set([])
 
-        neighborNodes = []
+        our_nodes = self.board.nodes
+        
+        for node in our_nodes:
+            n_neutral_neighbors = get_neutral_neighbors(self, node)
+            for neighbor in n_neutral_neighbors:
+                neutral_neighbors.add(neighbor)
 
-        for edge in edgeNodes:
-            #Get list of neighbors for each edge node
-            neighbors = self.board.neighbors(edge)
-            for neighbor in neighbors:
-                #Iterate through them. If the node is non-ourself, add to return list
-                if board.nodes[neighbor]{'owner'} != self.player_num:
-                    #Since non-ourself node, add to result list
-                    neighborNodes += neighbor
-                    #exit loop to avoid adding node too many times
-                    j = len(neighbors) + 1
+        return list(neutral_neighbors)
 
-        return neighborNodes
-    
+    #This function gets all neighbor nodes that are enemies
+    #Call after get_edge_nodes, pass in the lists for better processing
+    def get_all_enemy_neighbors(edgeNodes):
+        enemy_neighbors = set([])
+
+        our_nodes = self.board.nodes
+        
+        for node in our_nodes:
+            n_enemy_neighbors = get_enemy_neighbors(self, node)
+            for neighbor in n_enemy_neighbors:
+                enemy_neighbors.add(neighbor)
+
+        return list(enemy_neighbors)
+
     """
     Called at the start of every placement phase and movement phase.
     """
