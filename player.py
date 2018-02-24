@@ -150,15 +150,67 @@ class Player(BasePlayer):
         return
 
 
+    #Sorts a list of nodes, from lowest to highest, by the army count
+    def sortByCount(nodes):
+        for i in range[0, len(nodes)]:
+            lowestArmy = 99999999
+            for j in range[i, len(nodes)]:
+                if nodes[j]['old_units'] < lowestArmy:
+                    lowestArmy = nodes[j]['old_units']
+                    tempNode = nodes[i]
+                    nodes[i] = nodes[j]
+                    nodes[j] = tempNode
+
+        return nodes
+            
+            
+    #Creates a spread-type moveset
+    def createSpreadMove(self):
+        #Prioritize low-army territories in adjacency
+
+    def createAttackMove(self):
+        return None
+
+    def createDefendMove(self):
+        return None
+
+    def createIDefendMove(self):
+        return None
+
+    #This pops the top priority off the heap, calls the correct function
+    #Then returns the list of moves corresponding to that type of order
+    def enactPriority(self):
+        #Note: the heap will never be empty
+        order = heapq.heappop(self.prioritiesPQ)
+
+        listOfMoves = []
+
+        #SPREAD
+        if order == 0:
+            listOfMoves = createSpreadMove(self)
+        #ATTACK
+        elif order >= 1 and order <= 3:
+            listOfMoves = createAttackMove(self)
+        #DEFEND
+        elif order >= 4 and order <= 6:
+            listOfMoves = createDefendMove(self)
+        #IDEFEND
+        elif order >= 7 and order <= 9:
+            listOfMoves = createIDefendMove(self)
+
+        return listOfMoves
+
     """
     Called during the placement phase to request player moves
     """
     def player_place_units(self):
 
+        self.dict_moves = []
+        
         #Add moves here
         unitsToPlace = self.max_units
         while unitsToPlace > 0:
-            #Do some stuff
+            self.dict_moves.append(enactPriority(self))
             
 
         return self.dict_moves #Returns moves built up over the phase. Do not modify!
