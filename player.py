@@ -160,7 +160,7 @@ class Player(BasePlayer):
         return None
 
     def create_defend_place(self):
-        return Non
+        return None
 
     def create_idefend_place(self):
         return None
