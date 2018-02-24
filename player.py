@@ -23,8 +23,10 @@ class Player(BasePlayer):
         #Our player specific data
 
         #Updated to store current nodes that are "on the edge"
+        #Of type int list
         self.edge_list = []
         #Updated to store current nodes that are bordering our edge
+        #Of type int list
         self.neighbor_list = []
 
         #Priority queue to store our enumerated types, default in above
@@ -78,7 +80,7 @@ class Player(BasePlayer):
         our_nodes = get_our_nodes(self)
         
         for node in our_nodes:
-            n_unfriendly_neighbors = get_unfriendly_neighbors(self, node)
+            n_unfriendly_neighbors = self.get_unfriendly_neighbors(self, node)
             num_neighbors = 0
             for neighbor in n_unfriendly_neighbors:
                 neighbor_set.add(neighbor)
@@ -100,10 +102,10 @@ class Player(BasePlayer):
         return 4 + math.floor((1 - pow(.9, counter)) / (1 - .9))
     
     def update_apt_list(self, board):
-        self.aptList[0] = calc_apt(board, 'p1')
-        self.aptList[1] = calc_apt(board, 'p2')
-        self.aptList[2] = calc_apt(board, 'p3')
-        self.aptList[3] = calc_apt(board, 'p4')
+        self.aptList[0] = self.calc_apt(board, 'p1')
+        self.aptList[1] = self.calc_apt(board, 'p2')
+        self.aptList[2] = self.calc_apt(board, 'p3')
+        self.aptList[3] = self.calc_apt(board, 'p4')
 
         return
     
@@ -111,7 +113,7 @@ class Player(BasePlayer):
     #update_previous_edge
     def update_previous_interior(self):
         self.previous_interior = []
-        for n in get_our_nodes(self):
+        for n in self.get_our_nodes(self):
             if(self.edge_list.count(n) == 0):
                 self.previous_interior.append(n)
         return
@@ -135,10 +137,8 @@ class Player(BasePlayer):
         super().init_turn(board, nodes, max_units)       #Initializes turn-level state variables
 
         #Update self data
-        self.edge_list = update_list_data(self, board)
-        update_apt_list(self, board)
-
-        
+        self.update_list_info(self)
+        self.update_apt_list(self, board)
         return
 
 
@@ -161,7 +161,7 @@ class Player(BasePlayer):
         n_list = [[]]
 
         for n in self.neighbor_list:
-            n_list.append([get_friendly_neighbors(self, n)])
+            n_list.append([self.get_friendly_neighbors(self, n)])
 
         return n_list
 
@@ -171,11 +171,11 @@ class Player(BasePlayer):
 
         place_list = []
         #Prioritize low-army territories in adjacency
-        self.neighbor_list = sort_by_count(self.neighbor_list)
-        own_adjacency_list = get_adjacent_own_nodes(self)
+        self.neighbor_list = self.sort_by_count(self.neighbor_list)
+        own_adjacency_list = self.get_adjacent_own_nodes(self)
 
         for node_list in own_adjacency_list:
-            node_list = sort_by_count(node_list)
+            node_list = self.sort_by_count(node_list)
             best_node = node_list[len(node_list) - 1]
         return
 
@@ -183,7 +183,7 @@ class Player(BasePlayer):
         #Figure out what nodes we need to place
         adjacent_nodes = []
         for n in self.edge_list:
-            n_neighbors = get_unfriendly_neighbors(self, n)
+            n_neighbors = self.get_unfriendly_neighbors(self, n)
             for neighbor in n_neighbors:
                 if (neighbor['owner'] == p_id): 
                     adjacent_nodes.append(neighbor)
@@ -194,7 +194,7 @@ class Player(BasePlayer):
         total_armies = 0
         for n in adjacent_nodes:
             num_armies = 0
-            for neighbor in get_unfriendly_neighbors(self, n):
+            for neighbor in self.get_unfriendly_neighbors(self, n):
                 num_armies += neighbor['old_units']
             adjacent_to_p.append((n, num_armies))
             total_armies += num_armies
@@ -225,10 +225,10 @@ class Player(BasePlayer):
 
         #SPREAD
         if order == 0:
-            list_of_places = create_spread_place(self, units_to_place)
+            list_of_places = self.create_spread_place(self, units_to_place)
         #ATTACK
         elif order >= 1 and order <= 3:
-            list_of_places = create_attack_place(self, units_to_place, p_id)
+            list_of_places = self.create_attack_place(self, units_to_place, p_id)
 
         return list_of_places
 
@@ -242,13 +242,13 @@ class Player(BasePlayer):
         armies_left = self.max_units
         
         if ('p1' != self.player_num):
-            place_list_temp.append(create_attack_place(self, armies_left, 'p1'))
+            place_list_temp.append(self.create_attack_place(self, armies_left, 'p1'))
         if ('p2' != self.player_num):
-            place_list_temp.append(create_attack_place(self, armies_left, 'p2'))
+            place_list_temp.append(self.create_attack_place(self, armies_left, 'p2'))
         if ('p3' != self.player_num):
-            place_list_temp.append(create_attack_place(self, armies_left, 'p3'))
+            place_list_temp.append(self.create_attack_place(self, armies_left, 'p3'))
         if ('p4' != self.player_num):
-            place_list_temp.append(create_attack_place(self, armies_left, 'p4'))
+            place_list_temp.append(self.create_attack_place(self, armies_left, 'p4'))
 
         for place in place_list_temp:
             #Make sure the move doesn't result in negative armies placed
@@ -279,36 +279,36 @@ class Player(BasePlayer):
         #Creates a list of all adjacent enemies
         enemy_neighbor_list = []
         if ('p1' != self.player_num):
-            enemy_neighbor_list.append(filter_by_id(self.neighbor_list, 'p1'))
+            enemy_neighbor_list.append(self.filter_by_id(self.neighbor_list, 'p1'))
         if ('p2' != self.player_num):
-            enemy_neighbor_list.append(filter_by_id(self.neighbor_list, 'p2'))
+            enemy_neighbor_list.append(self.filter_by_id(self.neighbor_list, 'p2'))
         if ('p3' != self.player_num):
-            enemy_neighbor_list.append(filter_by_id(self.neighbor_list, 'p3'))
+            enemy_neighbor_list.append(self.filter_by_id(self.neighbor_list, 'p3'))
         if ('p4' != self.player_num):
-            enemy_neighbor_list.append(filter_by_id(self.neighbor_list, 'p4'))
+            enemy_neighbor_list.append(self.filter_by_id(self.neighbor_list, 'p4'))
 
         #Creates a list of all adjacent neutrals
-        neutral_neighbor_list = filter_by_id(self.neighbor_list, None)
+        neutral_neighbor_list = self.filter_by_id(self.neighbor_list, None)
 
         #Sorts the enemies by count (least to greatest)
-        enemy_neighbor_list = sort_by_count(enemy_neighbor_list)
+        enemy_neighbor_list = self.sort_by_count(enemy_neighbor_list)
         #Sorts the neutrals by count (least to greatest)
-        neutral_neighbor_list = sort_by_count(neutral_neighbor_list)
+        neutral_neighbor_list = self.sort_by_count(neutral_neighbor_list)
 
         #Gives our nodes that touch the sorted enemies (in tuples)
-        our_neighbor_enemy_list = get_adjacent_own_nodes(enemy_neighbor_list)
+        our_neighbor_enemy_list = self.get_adjacent_own_nodes(enemy_neighbor_list)
         #Gives our nodes that touch the sorted neutrals (in tuples)
-        our_neighbor_neutral_list = get_adjacent_own_nodes(neutral_neighbor_list)
+        our_neighbor_neutral_list = self.get_adjacent_own_nodes(neutral_neighbor_list)
 
 
         for i in range[0, len(our_neighbor_enemy_list)]:
-            node_list = sort_by_count(our_neighbor_enemy_list[i])
+            node_list = self.sort_by_count(our_neighbor_enemy_list[i])
             best_node = node_list[len(node_list) - 1]
             if enemy_neighbor_list[i]['old_units'] - best_node['old_units'] < units_left:
                 super().move_unit(self, best_node, enemy_neighbor_list[i], best_node['old_units'] - 1)
 
         for i in range[0, len(our_neighbor_neutral_list)]:
-            node_list = sort_by_count(our_neighbor_neutral_list[i])
+            node_list = self.sort_by_count(our_neighbor_neutral_list[i])
             best_node = node_list[len(node_list) - 1]
             if nuetral_neighbor_list[i]['old_units'] - best_node['old_units'] < units_left:
                 super().move_unit(self, best_node, neutral_neighbor_list[i], best_node['old_units'] - 1)                    
