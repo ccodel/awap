@@ -1,21 +1,51 @@
-import BasePlayer
+from base_player import BasePlayer
+import networkx as nx
 
-class Player(base_player.BasePlayer):
+class Player(BasePlayer):
+
+    """
+    You will implement this class for the competition.
+    You can add any additional variables / methods in this file. 
+    Do not modify the class name or the base class and do not modify the lines marked below.
+    """
+
     def __init__(self, p_id):
-        self.dict_moves = {'place': [], 'move': []} # Action dictionary (you should only use our interface to modify this)
-        self.player_num = p_id      # each player on a board will have a unique player number
-        self.max_units = 0          # max number of units the player can place (updated after calling a place command)
-        self.nodes = None           # list of nodes that this player owns (updated every turn)
-        self.board = None           # networkx object (updated every turn)
-        self.list_graph = None      # list representation of the entire board (updated every turn)
+        super().__init__(p_id)  #Initializes the super class. Do not modify!
 
+        """
+        Insert player-specific initialization code here
+        """
         return
 
 
+    """
+    Called at the start of every placement phase and movement phase.
+    """
     def init_turn(self, board, nodes, max_units):
-        self.dict_moves = {'place': [], 'move': []}
-        self.max_units = max_units
-        self.nodes = nodes
-        self.board = board
-        
+        super().init_turn(board, nodes, max_units)       #Initializes turn-level state variables
+
+        """
+        Insert any player-specific turn initialization code here
+        """
         return
+
+
+    """
+    Called during the placement phase to request player moves
+    """
+    def player_place_units(self):
+        """
+        Insert player logic here to determine where to place your units
+        """
+
+        return self.dict_moves #Returns moves built up over the phase. Do not modify!
+
+    """
+    Called during the move phase to request player moves
+    """
+    def player_move_units(self):
+        """
+        Insert player logic here to determine where to move your units
+        """
+
+        return self.dict_moves #Returns moves built up over the phase. Do not modify!
