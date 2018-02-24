@@ -31,12 +31,12 @@ class Player(BasePlayer):
 
         edgeNodes = []
         
-        for i in range[0, len(self.nodes)]:
+        for node in self.nodes:
             #Get list of neighbors for each of our owned nodes
-            neighbors = self.board.neighbors(self.nodes(i))
-            for j in range[0, len(neighbors)]:
+            neighbors = self.board.neighbors(node)
+            for neighbor in neighbors:
                 #Iterate through them. If has non-ourself, add to return list
-                if board.nodes[neighbors(j)]{'owner'} != self.player_num:
+                if board.nodes[neighbor]{'owner'} != self.player_num:
                     #Since non-ourself node, add to result list
                     edgeNodes += self.nodes[i]
                     #exit loop to avoid adding edge node too many times
