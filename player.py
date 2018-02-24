@@ -130,6 +130,8 @@ class Player(BasePlayer):
 
         return
 
+    def 
+
     """
     Called at the start of every placement phase and movement phase.
     """
@@ -139,9 +141,7 @@ class Player(BasePlayer):
         #Update self data
         update_apt_list(self, board)
 
-        """
-        Insert any player-specific turn initialization code here
-        """
+        
         return
 
 
@@ -149,9 +149,12 @@ class Player(BasePlayer):
     Called during the placement phase to request player moves
     """
     def player_place_units(self):
-        """
-        Insert player logic here to determine where to place your units
-        """
+
+        #Add moves here
+        unitsToPlace = self.max_units
+        while unitsToPlace > 0:
+            #Do some stuff
+            
 
         return self.dict_moves #Returns moves built up over the phase. Do not modify!
 
