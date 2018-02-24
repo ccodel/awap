@@ -5,17 +5,18 @@ import networkx as nx
 
 class Player(BasePlayer):
 
-    class Priority(Enum):
-        SPREAD = 0
-        ATTACK_1 = 1
-        ATTACK_2 = 2
-        ATTACK_3 = 3
-        DEFEND_1 = 4
-        DEFEND_2 = 5
-        DEFEND_3 = 6
-        IDEFEND_1 = 7
-        IDEFEND_2 = 8
-        IDEFEND_3 = 9
+    #Substitute for enum
+    #Each type is an integer
+    SPREAD = 0
+    ATTACK_1 = 1
+    ATTACK_2 = 2
+    ATTACK_3 = 3
+    DEFEND_1 = 4
+    DEFEND_2 = 5
+    DEFEND_3 = 6
+    IDEFEND_1 = 7
+    IDEFEND_2 = 8
+    IDEFEND_3 = 9
 
     """
     You will implement this class for the competition.
@@ -41,7 +42,7 @@ class Player(BasePlayer):
         self.neighbor_list = []
 
         #Priority queue to store our enumerated types, default in above
-        self.prioritiesPQ = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        self.prioritiesPQ = []
         #APT is stored by ID. Our own player ID may not align with the first index of this list
         self.aptList = [5, 5, 5, 5]
         
@@ -115,8 +116,6 @@ class Player(BasePlayer):
 
         return
 
-    def 
-
     """
     Called at the start of every placement phase and movement phase.
     """
@@ -147,10 +146,11 @@ class Player(BasePlayer):
     #Returns a node list list. Each list contains the nodes that
     # neighbor the corresponding neighbor node in self.neighbor_list
     def get_adjacent_own_nodes(self):
+        return
         
             
     #Creates a spread-type placeset
-    def create_spread_place(self):
+    def create_spread_place(self, units_to_place):
         #Prioritize low-army territories in adjacency
         self.neighborList = sort_by_count(self.neighborList)
         own_adjacency_list = get_adjacent_own_nodes(self)
@@ -158,20 +158,21 @@ class Player(BasePlayer):
         for node_list in own_adjacency_list:
             node_list = sort_by_count(node_list)
             best_node = node_list[len(node_list) - 1]
+        return
             
 
-    def create_attack_place(self):
+    def create_attack_place(self, units_to_place, p_id):
         return None
 
-    def create_defend_place(self):
-        return Non
+    def create_defend_place(self, units_to_place, p_id):
+        return None
 
-    def create_idefend_place(self):
+    def create_idefend_place(self, units_to_place, p_id):
         return None
 
     #This pops the top priority off the heap, calls the correct function
     #Then returns the list of moves corresponding to that type of order
-    def enactPriority(self):
+    def enactPriority(self, units_to_place):
         #Note: the heap will never be empty
         order = heapq.heappop(self.prioritiesPQ)
 
@@ -179,16 +180,16 @@ class Player(BasePlayer):
 
         #SPREAD
         if order == 0:
-            list_of_places = create_spread_place(self)
+            list_of_places = create_spread_place(self, units_to_place)
         #ATTACK
         elif order >= 1 and order <= 3:
-            list_of_places = create_attack_place(self)
+            list_of_places = create_attack_place(self, units_to_place, p_id)
         #DEFEND
         elif order >= 4 and order <= 6:
-            list_of_places = create_defend_place(self)
+            list_of_places = create_defend_place(self, units_to_place, p_id)
         #IDEFEND
         elif order >= 7 and order <= 9:
-            list_of_places = create_idefend_place(self)
+            list_of_places = create_idefend_place(self, units_to_place, p_id)
 
         return list_of_places
 
@@ -201,7 +202,7 @@ class Player(BasePlayer):
         units_to_place = self.max_units
         while units_to_place > 0:
             #new_place_order is of (int * int * int) list
-            new_place_order = enactPriority(self, units_to_place))
+            new_place_order = enactPriority(self, units_to_place)
             #Subtract the 
             units_to_place -= new_place_order[2]
             super().place_unit(new_place_order)
