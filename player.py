@@ -5,16 +5,17 @@ import networkx as nx
 
 class Player(BasePlayer):
 
-    SPREAD = 0
-    ATTACK_1 = 1
-    ATTACK_2 = 2
-    ATTACK_3 = 3
-    DEFEND_1 = 4
-    DEFEND_2 = 5
-    DEFEND_3 = 6
-    IDEFEND_1 = 7
-    IDEFEND_2 = 8
-    IDEFEND_3 = 9
+    class Priority(Enum):
+        SPREAD = 0
+        ATTACK_1 = 1
+        ATTACK_2 = 2
+        ATTACK_3 = 3
+        DEFEND_1 = 4
+        DEFEND_2 = 5
+        DEFEND_3 = 6
+        IDEFEND_1 = 7
+        IDEFEND_2 = 8
+        IDEFEND_3 = 9
 
     """
     You will implement this class for the competition.
@@ -175,7 +176,10 @@ class Player(BasePlayer):
         self.neighborList = sort_by_count(self.neighborList)
         own_adjacency_list = get_adjacent_own_nodes(self)
 
-        for node_list 
+        for node_list in own_adjacency_list:
+            node_list = sort_by_count(node_list)
+            best_node = node_list[len(node_list) - 1]
+            
 
     def create_attack_place(self):
         return None
@@ -213,13 +217,15 @@ class Player(BasePlayer):
     Called during the placement phase to request player moves
     """
     def player_place_units(self):
-
-        self.dict_moves = []
         
         #Add moves here
-        unitsToPlace = self.max_units
-        while unitsToPlace > 0:
-            self.dict_moves.append(enactPriority(self))
+        units_to_place = self.max_units
+        while units_to_place > 0:
+            #new_place_order is of (int * int * int) list
+            new_place_order = enactPriority(self, units_to_place))
+            #Subtract the 
+            units_to_place -= new_place_order[2]
+            super().place_unit(new_place_order)
             
 
         return self.dict_moves #Returns moves built up over the phase. Do not modify!
