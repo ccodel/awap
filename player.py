@@ -9,15 +9,41 @@ class Player(BasePlayer):
     Do not modify the class name or the base class and do not modify the lines marked below.
     """
 
+    #Some superclass player data includes:
+    #self.dict_moves
+    #self.player_num = id
+    #self.max_units
+    #self.nodes
+    #self.board
+    #self.list_graph
     def __init__(self, p_id):
         super().__init__(p_id)  #Initializes the super class. Do not modify!
 
-        """
-        Insert player-specific initialization code here
-        """
+        #Our player specific data
+        self.edgeList = []
+        self.neighborList = []
         return
 
 
+    #This function gets our own edge nodes
+    #Call after board info is updated in self
+    def get_edge_nodes(self):
+
+        edgeNodes = []
+        
+        for i in range[0, len(self.nodes)]:
+            #Get list of neighbors for each of our owned nodes
+            neighbors = self.board.neighbors(self.nodes(i))
+            for j in range[0, len(neighbors)]:
+                #Iterate through them. If has non-ourself, add to return list
+                if board.nodes[neighbors(j)]{'owner'} != self.player_num:
+                    #Since non-ourself node, add to result list
+                    edgeNodes += self.nodes[i]
+                    #exit loop to avoid adding edge node too many times
+                    j = len(neighbors) + 1
+
+        return edgeNodes
+    
     """
     Called at the start of every placement phase and movement phase.
     """
