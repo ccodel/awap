@@ -163,13 +163,19 @@ class Player(BasePlayer):
                     nodes[j] = tempNode
 
         return nodes
+
+    #Returns a node list list. Each list contains the nodes that
+    # neighbor the corresponding neighbor node in self.neighbor_list
+    def get_adjacent_own_nodes(self):
+        
             
-            
-    #Creates a spread-type moveset
+    #Creates a spread-type placeset
     def create_spread_place(self):
         #Prioritize low-army territories in adjacency
         self.neighborList = sort_by_count(self.neighborList)
-        
+        own_adjacency_list = get_adjacent_own_nodes(self)
+
+        for node_list 
 
     def create_attack_place(self):
         return None
