@@ -4,12 +4,6 @@ import networkx as nx
 
 class Player(BasePlayer):
 
-    """
-    You will implement this class for the competition.
-    You can add any additional variables / methods in this file. 
-    Do not modify the class name or the base class and do not modify the lines marked below.
-    """
-
     #Some superclass player data includes:
     #self.dict_moves
     #self.player_num = id
@@ -42,6 +36,8 @@ class Player(BasePlayer):
         return
 
     #This function returns all of our nodes
+    #Input: self
+    #Returns an int list
     def get_our_nodes(self):
         all_nodes = self.board.nodes
         our_nodes = []
@@ -51,28 +47,35 @@ class Player(BasePlayer):
         return our_nodes
 
     #This function gets the neighbors of the given node that are owned by self
+    #Input: self, int
+    #Returns an int list
     def get_friendly_neighbors(self, node):
+        #Int list
         neighbors = self.board.neighbors(node)
         owned_neighbors = []
 
         for n in neighbors:
-            if (all_nodes[n]['owner'] == self.player_num):
+            if (self.board.nodes[n]['owner'] == self.player_num):
                 owned_neighbors.append(n)
 
         return owned_neighbors
 
     #This function gets the neighbors of the given node that are neutral
+    #Input: self, int
     def get_unfriendly_neighbors(self, node):
+        #Int list
         neighbors = self.board.neighbors(node)
         neutral_neighbors = []
 
         for n in neighbors:
-            if (all_nodes[n]['owner'] == None):
+            if (self.board.nodes[n]['owner'] == None):
                 neutral_neighbors.append(n)
 
         return neutral_neighbors
 
     #This function gets all neighbor nodes that are enemies
+    #Input: self
+    #No output
     def update_list_info(self):
         neighbor_set = set(self.neighbor_list)
         edge_set = set(self.edge_list)
@@ -264,11 +267,11 @@ class Player(BasePlayer):
     """
     Called during the move phase to request player moves
     """
-    def filter_by_id(nodes, p_id):
+    def filter_by_id(self, nodes, p_id):
         result_list = []
 
         for node in nodes:
-            if node['owner'] == p_id:
+            if self.board.nodes[node]['owner'] == p_id:
                 result_list.append[node]
 
         return result_list
