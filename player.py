@@ -45,7 +45,12 @@ class Player(BasePlayer):
         self.prioritiesPQ = []
         #APT is stored by ID. Our own player ID may not align with the first index of this list
         self.aptList = [5, 5, 5, 5]
-        
+        #Keeps track of previous interior nodes to see if we have gained or
+        #lost ground against the enemy
+        self.previous_interior = []
+        #Keeps track of previous edge nodes to see if we have gained or
+        #lost ground against the enemy
+        self.previous_edge = []
         return
 
     #This function returns all of our nodes
@@ -114,6 +119,27 @@ class Player(BasePlayer):
         self.aptList[2] = calc_apt(board, 'p3')
         self.aptList[3] = calc_apt(board, 'p4')
 
+        return
+    
+    #Update self.previous_interior; run at end of turn before
+    #update_previous_edge
+    def update_previous_interior(self):
+        self.previous_interior = []
+        for n = get_our_nodes(self):
+            if(self.edge_list.count(n) == 0):
+                self.previous_interior.append(n)
+        return
+        
+    #Update self.previous_edge; run at end of turn before updating
+    #edge_list and neighbor_list for the next turn
+    def update_previous_edge(self):
+        self.previous_edge = self.edge_list
+        return
+
+    #Orders self.priorityPQ to decide which strategies to implement
+    def order_priorities(self):
+        self.priorityPQ = []
+        heappush(self.prioritiesPQ, (100, SPREAD))
         return
 
     """
