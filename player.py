@@ -185,7 +185,7 @@ class Player(BasePlayer):
         for n in self.edge_list:
             n_neighbors = self.get_unfriendly_neighbors(self, n)
             for neighbor in n_neighbors:
-                if (neighbor['owner'] == p_id): 
+                if (self.board[neighbor]['owner'] == p_id): 
                     adjacent_nodes.append(neighbor)
                     break
 
@@ -195,7 +195,7 @@ class Player(BasePlayer):
         for n in adjacent_nodes:
             num_armies = 0
             for neighbor in self.get_unfriendly_neighbors(self, n):
-                num_armies += neighbor['old_units']
+                num_armies += self.board[neighbor]['old_units']
             adjacent_to_p.append((n, num_armies))
             total_armies += num_armies
 
@@ -213,8 +213,6 @@ class Player(BasePlayer):
             placement_orders = [(adjacent_to_p[node_id], units_to_place)]
 
         return placement_orders
-
-        return placement_order
 
     #This pops the top priority off the heap, calls the correct function
     #Then returns the list of moves corresponding to that type of order
