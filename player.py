@@ -207,11 +207,12 @@ class Player(BasePlayer):
         placement_orders = []
         if(ratio > 2.0):
             for n in adjacent_to_p:
-                placement_orders.append((n[0], int(n[1]*ratio))
+                placement_orders.append((n[0], int(n[1]*ratio)))
         else:
             node_id = random.randint(0, placement_orders.length - 1)
             placement_orders = [(adjacent_to_p[node_id], units_to_place)] 
 
+        return placement_order
 
     #This pops the top priority off the heap, calls the correct function
     #Then returns the list of moves corresponding to that type of order
