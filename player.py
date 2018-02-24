@@ -1,5 +1,4 @@
 from base_player import BasePlayer
-from enum import ENUM
 import math
 import networkx as nx
 
@@ -125,7 +124,7 @@ class Player(BasePlayer):
     #update_previous_edge
     def update_previous_interior(self):
         self.previous_interior = []
-        for n = get_our_nodes(self):
+        for n in get_our_nodes(self):
             if(self.edge_list.count(n) == 0):
                 self.previous_interior.append(n)
         return
@@ -175,25 +174,31 @@ class Player(BasePlayer):
         n_list = [[]]
 
         for n in self.neighbor_list:
-            for e in self.edge_list:
-                if (n in get_neutral_neighbors(e)): n_list.append([n, e])
+            n_list.append([get_friendly_neighbors(self, n)])
 
         return n_list
 
-        
             
     #Creates a spread-type placeset
     #Returns a list of (node, amount)
     def create_spread_place(self, units_to_place):
+
+        place_list = []
         #Prioritize low-army territories in adjacency
-        self.neighborList = sort_by_count(self.neighborList)
+        self.neighbor_list = sort_by_count(self.neighborList)
         own_adjacency_list = get_adjacent_own_nodes(self)
 
-        for node_list in own_adjacency_list:
-            node_list = sort_by_count(node_list)
+        units_left = units_to_place
+
+        #Find best places to put armies
+        for i in range[0, len(own_adjacency_list)]:
+            node_list = sort_by_count(own_adjacency_list[i])
             best_node = node_list[len(node_list) - 1]
-        return
-            
+            if self.neighbor_list[i]['old_units'] - best_node['old_units'] < units_left:
+                place_list.append[(best_node, self.neighbor_list[i]['old_units'] - best_node['old_units'] + 1)]
+                units_left = units_left - (self.neighbor_list[i]['old_units'] - best_node['old_units'] + 1)
+
+        return place_list
 
 
     def create_attack_place(self, units_to_place, p_id):
@@ -238,7 +243,7 @@ class Player(BasePlayer):
         while units_to_place > 0:
             #new_place_order is of (int * int * int) list
             new_place_order = enactPriority(self, units_to_place)
-            #Subtract the 
+            #Subtract the armies used 
             units_to_place -= new_place_order[2]
             super().place_unit(new_place_order)
             
