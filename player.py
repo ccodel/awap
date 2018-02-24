@@ -157,6 +157,7 @@ class Player(BasePlayer):
         
             
     #Creates a spread-type placeset
+    #Returns a list of (node, amount)
     def create_spread_place(self, units_to_place):
         #Prioritize low-army territories in adjacency
         self.neighborList = sort_by_count(self.neighborList)
