@@ -10,12 +10,6 @@ class Player(BasePlayer):
     ATTACK_1 = 1
     ATTACK_2 = 2
     ATTACK_3 = 3
-    DEFEND_1 = 4
-    DEFEND_2 = 5
-    DEFEND_3 = 6
-    IDEFEND_1 = 7
-    IDEFEND_2 = 8
-    IDEFEND_3 = 9
 
     """
     You will implement this class for the competition.
@@ -185,7 +179,7 @@ class Player(BasePlayer):
 
         place_list = []
         #Prioritize low-army territories in adjacency
-        self.neighbor_list = sort_by_count(self.neighborList)
+        self.neighbor_list = sort_by_count(self.neighbor_list)
         own_adjacency_list = get_adjacent_own_nodes(self)
 
         units_left = units_to_place
@@ -204,12 +198,6 @@ class Player(BasePlayer):
     def create_attack_place(self, units_to_place, p_id):
         return None
 
-    def create_defend_place(self, units_to_place, p_id):
-        return None
-
-    def create_idefend_place(self, units_to_place, p_id):
-        return None
-
     #This pops the top priority off the heap, calls the correct function
     #Then returns the list of moves corresponding to that type of order
     def enactPriority(self, units_to_place):
@@ -224,12 +212,6 @@ class Player(BasePlayer):
         #ATTACK
         elif order >= 1 and order <= 3:
             list_of_places = create_attack_place(self, units_to_place, p_id)
-        #DEFEND
-        elif order >= 4 and order <= 6:
-            list_of_places = create_defend_place(self, units_to_place, p_id)
-        #IDEFEND
-        elif order >= 7 and order <= 9:
-            list_of_places = create_idefend_place(self, units_to_place, p_id)
 
         return list_of_places
 
@@ -241,21 +223,62 @@ class Player(BasePlayer):
         #Add moves here
         units_to_place = self.max_units
         while units_to_place > 0:
-            #new_place_order is of (int * int * int) list
-            new_place_order = enactPriority(self, units_to_place)
-            #Subtract the armies used 
-            units_to_place -= new_place_order[2]
-            super().place_unit(new_place_order)
+            #new_place_order is of (node * int) list
+            new_place_order_list = enactPriority(self, units_to_place)
+            #Subtract the armies used
+            for order in new_place_order_list:
+                units_to_place -= new_place_order[1]
+            super().place_unit(self, new_place_order[0], new_place_order[1])
             
 
         return self.dict_moves #Returns moves built up over the phase. Do not modify!
+
+
+
+    def create_spread_move(self, units_to_place):
+        move_list = []
+        #Prioritize low-army territories in adjacency
+        self.neighbor_list = sort_by_count(self.neighbor_list)
+        own_adjacency_list = get_adjacent_own_nodes(self)
+
+        #Attack with the ones that have more armies on it
+        for i in range[0, len(own_adjacency_list)]:
+            node_list = sort_by_count(own_adjacency_list[i])
+            best_node = node_list[len(node_list) - 1]
+            #Take the node with the highest number of armies
+            if best_node['old_units'] > self.neighbor_list[i]:
+                super().move_unit(self, best_node, self.neighbor_list[i], best_node['old_units'] - 1)
+        return
+
+    def create_attack_move(self, units_to_place, p_id):
+        return
+
+    def enactMovePriority(self):
+        #Note: the heap will never be empty
+        order = heapq.heappop(self.prioritiesPQ)
+
+        list_of_places = []
+
+        #SPREAD
+        if order == 0:
+            list_of_places = create_spread_place(self, units_to_place)
+        #ATTACK
+        elif order >= 1 and order <= 3:
+            list_of_places = create_attack_place(self, units_to_place, p_id)
+
+        return
 
     """
     Called during the move phase to request player moves
     """
     def player_move_units(self):
-        """
-        Insert player logic here to determine where to move your units
-        """
+        
+        while units_to_place > 0:
+            #new_place_order is of (node * int) list
+            new_place_order = enactPriority(self, units_to_place)
+            #Subtract the armies used 
+            units_to_place -= new_place_order[1]
+            super().place_unit(self, new_place_order[0], new_place_order[1])
+            
 
         return self.dict_moves #Returns moves built up over the phase. Do not modify!
