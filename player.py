@@ -3,6 +3,17 @@ import networkx as nx
 
 class Player(BasePlayer):
 
+    SPREAD = 0
+    ATTACK_1 = 1
+    ATTACK_2 = 2
+    ATTACK_3 = 3
+    DEFEND_1 = 4
+    DEFEND_2 = 5
+    DEFEND_3 = 6
+    IDEFEND_1 = 7
+    IDEFEND_2 = 8
+    IDEFEND_3 = 9
+
     """
     You will implement this class for the competition.
     You can add any additional variables / methods in this file. 
@@ -53,16 +64,17 @@ class Player(BasePlayer):
 
         neighborNodes = []
 
-        for edge in edgeNodes:
-            #Get list of neighbors for each edge node
-            neighbors = self.board.neighbors(edge)
-            for neighbor in neighbors:
-                #Iterate through them. If the node is non-ourself, add to return list
-                if board.nodes[neighbor]{'owner'} != self.player_num:
-                    #Since non-ourself node, add to result list
-                    neighborNodes += neighbor
-                    #exit loop to avoid adding node too many times
-                    j = len(neighbors) + 1
+        for node in edgeNodes:
+            #Get list of neighbors for each of our owned nodes
+            if node['owner'] != self.player_num:
+                neighbors = self.board.neighbors(node)
+                for neighbor in neighbors:
+                    #Iterate through them. If has non-ourself, add to return list
+                    if neighbor['owner'] == self.player_num:
+                        #Since non-ourself node, add to result list
+                        neighborNodes += node
+                        #exit loop to avoid adding edge node too many times
+                        j = len(neighbors) + 1
 
         return neighborNodes
     
