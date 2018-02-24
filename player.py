@@ -1,22 +1,8 @@
 from base_player import BasePlayer
-from enum import ENUM
 import math
 import networkx as nx
 
 class Player(BasePlayer):
-
-    #Substitute for enum
-    #Each type is an integer
-    SPREAD = 0
-    ATTACK_1 = 1
-    ATTACK_2 = 2
-    ATTACK_3 = 3
-    DEFEND_1 = 4
-    DEFEND_2 = 5
-    DEFEND_3 = 6
-    IDEFEND_1 = 7
-    IDEFEND_2 = 8
-    IDEFEND_3 = 9
 
     """
     You will implement this class for the competition.
@@ -125,7 +111,7 @@ class Player(BasePlayer):
     #update_previous_edge
     def update_previous_interior(self):
         self.previous_interior = []
-        for n = get_our_nodes(self):
+        for n in get_our_nodes(self):
             if(self.edge_list.count(n) == 0):
                 self.previous_interior.append(n)
         return
@@ -175,15 +161,17 @@ class Player(BasePlayer):
         n_list = [[]]
 
         for n in self.neighbor_list:
-            for e in self.edge_list:
-                if (n in get_neutral_neighbors(e)): n_list.append([n, e])
+            n_list.append([get_friendly_neighbors(self, n)])
 
         return n_list
 
     #Creates a spread-type placeset
+    #Returns a list of (node, amount)
     def create_spread_place(self, units_to_place):
+
+        place_list = []
         #Prioritize low-army territories in adjacency
-        self.neighborList = sort_by_count(self.neighborList)
+        self.neighbor_list = sort_by_count(self.neighbor_list)
         own_adjacency_list = get_adjacent_own_nodes(self)
 
         for node_list in own_adjacency_list:
@@ -225,12 +213,6 @@ class Player(BasePlayer):
             placement_orders = [(adjacent_to_p[node_id], units_to_place)] 
 
 
-    def create_defend_place(self, units_to_place, p_id):
-        return None
-
-    def create_idefend_place(self, units_to_place, p_id):
-        return None
-
     #This pops the top priority off the heap, calls the correct function
     #Then returns the list of moves corresponding to that type of order
     def enactPriority(self, units_to_place):
@@ -245,12 +227,6 @@ class Player(BasePlayer):
         #ATTACK
         elif order >= 1 and order <= 3:
             list_of_places = create_attack_place(self, units_to_place, p_id)
-        #DEFEND
-        elif order >= 4 and order <= 6:
-            list_of_places = create_defend_place(self, units_to_place, p_id)
-        #IDEFEND
-        elif order >= 7 and order <= 9:
-            list_of_places = create_idefend_place(self, units_to_place, p_id)
 
         return list_of_places
 
@@ -262,11 +238,12 @@ class Player(BasePlayer):
         #Add moves here
         units_to_place = self.max_units
         while units_to_place > 0:
-            #new_place_order is of (int * int * int) list
-            new_place_order = enactPriority(self, units_to_place)
-            #Subtract the 
-            units_to_place -= new_place_order[2]
-            super().place_unit(new_place_order)
+            #new_place_order is of (node * int) list
+            new_place_order_list = enactPriority(self, units_to_place)
+            #Subtract the armies used
+            for order in new_place_order_list:
+                units_to_place -= new_place_order[1]
+            super().place_unit(self, new_place_order[0], new_place_order[1])
             
 
         return self.dict_moves #Returns moves built up over the phase. Do not modify!
@@ -274,9 +251,52 @@ class Player(BasePlayer):
     """
     Called during the move phase to request player moves
     """
+    def filter_by_id(nodes, p_id):
+        result_list = []
+
+        for node in nodes:
+            if node['owner'] == p_id:
+                result_list.append[node]
+
+        return result_list
+    
     def player_move_units(self):
-        """
-        Insert player logic here to determine where to move your units
-        """
+    
+        #Creates a list of all adjacent enemies
+        enemy_neighbor_list = []
+        if ('p1' != self.player_num):
+            enemy_neighbor_list.append[filter_by_id(self.neighbor_list, 'p1')]
+        if ('p2' != self.player_num):
+            enemy_neighbor_list.append[filter_by_id(self.neighbor_list, 'p2')]
+        if ('p3' != self.player_num):
+            enemy_neighbor_list.append[filter_by_id(self.neighbor_list, 'p2')]
+        if ('p4' != self.player_num):
+            enemy_neighbor_list.append[filter_by_id(self.neighbor_list, 'p2')]
+
+        #Creates a list of all adjacent neutrals
+        neutral_neighbor_list = filter_by_id(self.neighbor_list, None)
+
+        #Sorts the enemies by count (least to greatest)
+        enemy_neighbor_list = sort_by_count(enemy_neighbor_list)
+        #Sorts the neutrals by count (least to greatest)
+        neutral_neighbor_list = sort_by_count(neutral_neighbor_list)
+
+        #Gives our nodes that touch the sorted enemies (in tuples)
+        our_neighbor_enemy_list = get_adjacent_own_nodes(enemy_neighbor_list)
+        #Gives our nodes that touch the sorted neutrals (in tuples)
+        our_neighbor_neutral_list = get_adjacent_own_nodes(neutral_neighbor_list)
+
+
+        for i in range[0, len(our_neighbor_enemy_list)]:
+            node_list = sort_by_count(our_neighbor_enemy_list[i])
+            best_node = node_list[len(node_list) - 1]
+            if enemy_neighbor_list[i]['old_units'] - best_node['old_units'] < units_left:
+                super().move_unit(self, best_node, enemy_neighbor_list[i], best_node['old_units'] - 1)
+
+        for i in range[0, len(our_neighbor_neutral_list)]:
+            node_list = sort_by_count(our_neighbor_neutral_list[i])
+            best_node = node_list[len(node_list) - 1]
+            if nuetral_neighbor_list[i]['old_units'] - best_node['old_units'] < units_left:
+                super().move_unit(self, best_node, neutral_neighbor_list[i], best_node['old_units'] - 1)                    
 
         return self.dict_moves #Returns moves built up over the phase. Do not modify!
