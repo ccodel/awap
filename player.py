@@ -36,7 +36,7 @@ class Player(BasePlayer):
             neighbors = self.board.neighbors(node)
             for neighbor in neighbors:
                 #Iterate through them. If has non-ourself, add to return list
-                if board.nodes[neighbor]{'owner'} != self.player_num:
+                if self.board.nodes[neighbor]{'owner'} != self.player_num:
                     #Since non-ourself node, add to result list
                     edgeNodes += self.nodes[i]
                     #exit loop to avoid adding edge node too many times
