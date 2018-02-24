@@ -67,54 +67,33 @@ class Player(BasePlayer):
         return owned_neighbors
 
     #This function gets the neighbors of the given node that are neutral
-    def get_neutral_neighbors(self, node):
+    def get_unfriendly_neighbors(self, node):
         neighbors = self.board.neighbors(node)
-        neutral_neighbors = []
+        unfriendly_neighbors = []
         
         for n in neighbors:
             n_node = self.board.nodes[n]
-            if(n_node['owner'] == None): neutral_neighbors.append(n_node)
+            if(n_node['owner'] != self.player_num): unfriendly_neighbors.append(n_node)
 
-        return neutral_neighbors
-
-    #This function gets the neighbors of the given node that are enemies
-    def get_enemy_neighbors(self, node):
-        neighbors = self.board.neighbors(node)
-        enemy_neighbors = []
-
-        for n in neighbors:
-            n_node = self.board.nodes[n]
-            if(n_node['owner'] != None and n_node['owner'] != self.player_num):
-                owned_neighbors.append(n_node)
-
-        return enemy_neighbors
-
-    #This function gets all neighbor nodes that are neutral
-    def get_all_neutral_neighbors(self):
-        neutral_neighbors = set([])
-
-        our_nodes = get_our_nodes(self)
-        
-        for node in our_nodes:
-            n_neutral_neighbors = get_neutral_neighbors(self, node)
-            for neighbor in n_neutral_neighbors:
-                neutral_neighbors.add(neighbor)
-
-        return list(neutral_neighbors)
+        return unfriendly_neighbors
 
     #This function gets all neighbor nodes that are enemies
-    #Call after get_edge_nodes, pass in the lists for better processing
-    def get_all_enemy_neighbors(edgeNodes):
-        enemy_neighbors = set([])
+    def update_list_info(self):
+        neighbor_set = set(self.neighbor_list)
+        edge_set = set(self.edge_list)
 
         our_nodes = get_our_nodes(self)
         
         for node in our_nodes:
-            n_enemy_neighbors = get_enemy_neighbors(self, node)
-            for neighbor in n_enemy_neighbors:
-                enemy_neighbors.add(neighbor)
+            n_unfriendly_neighbors = get_unfriendly_neighbors(self, node)
+            num_neighbors = 0
+            for neighbor in n_unfriendly_neighbors:
+                neighbor_set.add(neighbor)
+                num_neighbors += 1
+            if(num_neighbors > 0): edge_set.add(node)
 
-        return list(enemy_neighbors)
+        self.edge_list = list(edge_set)
+        self.neighbor_list = list(neighbor_set)
 
     #Calculates the apt for the board and given player ID
     def calc_apt(board, p_id):
@@ -123,7 +102,7 @@ class Player(BasePlayer):
 
         for node in nodes:
             if (node['owner'] == p_id):
-                counter++
+                counter += 1
 
         return 4 + math.floor((1 - pow(.9, counter)) / (1 - .9))
     
