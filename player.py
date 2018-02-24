@@ -43,8 +43,8 @@ class Player(BasePlayer):
     def get_our_nodes(self):
         all_nodes = self.board.nodes
         our_nodes = []
-        for n in all_nodes:
-            if(n['owner'] == self.player_num): our_nodes.append(n)
+        for i in range[0, len(all_nodes)]:
+            if(all_nodes[i]['owner'] == self.player_num): our_nodes.append(i)
 
         return our_nodes
 
@@ -54,21 +54,21 @@ class Player(BasePlayer):
         owned_neighbors = []
 
         for n in neighbors:
-            n_node = self.board.nodes[n]
-            if(n_node['owner'] == self.player_num): owned_neighbors.append(n_node)
+            if (all_nodes[n]['owner'] == self.player_num):
+                owned_neighbors.append(n)
 
         return owned_neighbors
 
     #This function gets the neighbors of the given node that are neutral
     def get_unfriendly_neighbors(self, node):
         neighbors = self.board.neighbors(node)
-        unfriendly_neighbors = []
-        
-        for n in neighbors:
-            n_node = self.board.nodes[n]
-            if(n_node['owner'] != self.player_num): unfriendly_neighbors.append(n_node)
+        neutral_neighbors = []
 
-        return unfriendly_neighbors
+        for n in neighbors:
+            if (all_nodes[n]['owner'] == None):
+                neutral_neighbors.append(n)
+
+        return neutral_neighbors
 
     #This function gets all neighbor nodes that are enemies
     def update_list_info(self):
@@ -83,7 +83,7 @@ class Player(BasePlayer):
             for neighbor in n_unfriendly_neighbors:
                 neighbor_set.add(neighbor)
                 num_neighbors += 1
-            if(num_neighbors > 0): edge_set.add(node)
+            if (num_neighbors > 0): edge_set.add(node)
 
         self.edge_list = list(edge_set)
         self.neighbor_list = list(neighbor_set)
@@ -205,12 +205,14 @@ class Player(BasePlayer):
         #If units_to_place is 2x total_armies, we approprotion proportionately
         #Else, we choose one place randomly to attack in force
         placement_orders = []
-        if(ratio > 2.0):
+        if (ratio > 2.0):
             for n in adjacent_to_p:
                 placement_orders.append((n[0], int(n[1]*ratio)))
         else:
             node_id = random.randint(0, placement_orders.length - 1)
-            placement_orders = [(adjacent_to_p[node_id], units_to_place)] 
+            placement_orders = [(adjacent_to_p[node_id], units_to_place)]
+
+        return placement_orders
 
         return placement_order
 
@@ -236,16 +238,28 @@ class Player(BasePlayer):
     """
     def player_place_units(self):
         
-        #Add moves here
-        units_to_place = self.max_units
-        while units_to_place > 0:
-            #new_place_order is of (node * int) list
-            new_place_order_list = enactPriority(self, units_to_place)
-            #Subtract the armies used
-            for order in new_place_order_list:
-                units_to_place -= new_place_order[1]
-            super().place_unit(self, new_place_order[0], new_place_order[1])
-            
+        place_list_temp = []
+        place_list_final = []
+        armies_left = self.max_units
+        
+        if ('p1' != self.player_num):
+            place_list_temp.append(create_attack_place(self, armies_left, 'p1'))
+        if ('p2' != self.player_num):
+            place_list_temp.append(create_attack_place(self, armies_left, 'p2'))
+        if ('p3' != self.player_num):
+            place_list_temp.append(create_attack_place(self, armies_left, 'p3'))
+        if ('p4' != self.player_num):
+            place_list_temp.append(create_attack_place(self, armies_left, 'p4'))
+
+        for place in place_list_temp:
+            #Make sure the move doesn't result in negative armies placed
+            if armies_left - place[1] > 0:
+                armies_left = armies_left - place[1]
+                place_list_final.append[place]
+
+        #Submit the move
+        for place in place_list_final:
+            super().place_unit(self, place[0], place[1])
 
         return self.dict_moves #Returns moves built up over the phase. Do not modify!
 
@@ -266,13 +280,13 @@ class Player(BasePlayer):
         #Creates a list of all adjacent enemies
         enemy_neighbor_list = []
         if ('p1' != self.player_num):
-            enemy_neighbor_list.append[filter_by_id(self.neighbor_list, 'p1')]
+            enemy_neighbor_list.append(filter_by_id(self.neighbor_list, 'p1'))
         if ('p2' != self.player_num):
-            enemy_neighbor_list.append[filter_by_id(self.neighbor_list, 'p2')]
+            enemy_neighbor_list.append(filter_by_id(self.neighbor_list, 'p2'))
         if ('p3' != self.player_num):
-            enemy_neighbor_list.append[filter_by_id(self.neighbor_list, 'p2')]
+            enemy_neighbor_list.append(filter_by_id(self.neighbor_list, 'p3'))
         if ('p4' != self.player_num):
-            enemy_neighbor_list.append[filter_by_id(self.neighbor_list, 'p2')]
+            enemy_neighbor_list.append(filter_by_id(self.neighbor_list, 'p4'))
 
         #Creates a list of all adjacent neutrals
         neutral_neighbor_list = filter_by_id(self.neighbor_list, None)
