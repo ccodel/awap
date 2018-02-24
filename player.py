@@ -35,9 +35,9 @@ class Player(BasePlayer):
         #Our player specific data
 
         #Updated to store current nodes that are "on the edge"
-        self.edgeList = []
+        self.edge_list = []
         #Updated to store current nodes that are bordering our edge
-        self.neighborList = []
+        self.neighbor_list = []
 
         #Priority queue to store our enumerated types, default in above
         self.prioritiesPQ = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
@@ -144,6 +144,7 @@ class Player(BasePlayer):
         super().init_turn(board, nodes, max_units)       #Initializes turn-level state variables
 
         #Update self data
+        self.edge_list = update_list_data(self, board)
         update_apt_list(self, board)
 
         
@@ -151,7 +152,7 @@ class Player(BasePlayer):
 
 
     #Sorts a list of nodes, from lowest to highest, by the army count
-    def sortByCount(nodes):
+    def sort_by_count(nodes):
         for i in range[0, len(nodes)]:
             lowestArmy = 99999999
             for j in range[i, len(nodes)]:
@@ -165,16 +166,18 @@ class Player(BasePlayer):
             
             
     #Creates a spread-type moveset
-    def createSpreadMove(self):
+    def create_spread_place(self):
         #Prioritize low-army territories in adjacency
+        self.neighborList = sort_by_count(self.neighborList)
+        
 
-    def createAttackMove(self):
+    def create_attack_place(self):
         return None
 
-    def createDefendMove(self):
-        return None
+    def create_defend_place(self):
+        return Non
 
-    def createIDefendMove(self):
+    def create_idefend_place(self):
         return None
 
     #This pops the top priority off the heap, calls the correct function
@@ -183,22 +186,22 @@ class Player(BasePlayer):
         #Note: the heap will never be empty
         order = heapq.heappop(self.prioritiesPQ)
 
-        listOfMoves = []
+        list_of_places = []
 
         #SPREAD
         if order == 0:
-            listOfMoves = createSpreadMove(self)
+            list_of_places = create_spread_place(self)
         #ATTACK
         elif order >= 1 and order <= 3:
-            listOfMoves = createAttackMove(self)
+            list_of_places = create_attack_place(self)
         #DEFEND
         elif order >= 4 and order <= 6:
-            listOfMoves = createDefendMove(self)
+            list_of_places = create_defend_place(self)
         #IDEFEND
         elif order >= 7 and order <= 9:
-            listOfMoves = createIDefendMove(self)
+            list_of_places = create_idefend_place(self)
 
-        return listOfMoves
+        return list_of_places
 
     """
     Called during the placement phase to request player moves
